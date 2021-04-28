@@ -13,18 +13,30 @@ function App() {
 
 class Game extends React.Component
 {
+  constructor(props)
+  {
+    super(props);
+    this.state = {
+      board: Array(81).fill(0),
+      history: null,
+      current: null,
+    };
+  }
+    
   render()
   {
     return(
       <div className="game">
       <div className="game-board">
-        <Board 
+        <Board
+        board = {this.state.board}
         />
       </div>
       <div className="game-info">
         
         <button>Undo</button>
-        <button>Redo</button>    
+        <button>Redo</button>
+        <button>Generate Puzzle</button>    
       </div>
     </div>
   );
@@ -34,6 +46,14 @@ class Game extends React.Component
 
 class Board extends React.Component
 {
+  constructor(props)
+  {
+    super(props);
+    this.state = {
+      board: props.board,
+    }
+  }
+
   renderRow(row)
   {
     const squares = [];
@@ -42,7 +62,7 @@ class Board extends React.Component
     for(let i = 0; i < squaresPerRow; i++)
     {
       squares.push(
-        Cell(offset + i)
+        Cell(this.state.board[offset + i], offset + i)
       );
     }
 
@@ -70,16 +90,16 @@ class Board extends React.Component
   }
 }
 
-
-
-function Cell(props)
+function Cell(props, id)
 {
   return(
-    <td className="Cell">
-      <input type="number" max="9" min="0" maxLength="1"></input>
+    <td className="Cell" id={id}>
+      <input type="number" max="9" min="0" maxLength="1" value={props==0 ? ' ': props}></input>
       </td>
   )
 }
+
+
 
 
 export default App;
