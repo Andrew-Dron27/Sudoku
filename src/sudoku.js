@@ -1,27 +1,29 @@
 
-function solvePuzzle(board)
+export function solvePuzzle(board)
 {
-  [row,col] = findNextFree(board);
-  if(row == -1 || col == -1)
-  {
-      return true;
-  }
-  for(let i = 1 ; i <= 9; i++)
-  {
-      if(!isNumUsed)
-      {
-          board[row * 9 + col] = i;
-          if(solvePuzzle(board))
-          {
-            return true;
-          }
-          board[row * 9 + col] = 0;
-      }
-  }
-  return false;
+    let row;
+    let col;
+    [row,col] = findNextFree(board);
+    if(row == -1 || col == -1)
+    {
+        return true;
+    }
+    for(let i = 1 ; i <= 9; i++)
+    {
+        if(!isNumUsed)
+        {
+            board[row * 9 + col] = i;
+            if(solvePuzzle(board))
+            {
+                return true;
+            }
+            board[row * 9 + col] = 0;
+        }
+    }
+    return false;
 }
 
-function isNumUsed(board, loc, num)
+export function isNumUsed(board, loc, num)
 {
     const val = board[loc];
     const row = Math.floor(loc / 9);
@@ -60,7 +62,7 @@ function isNumUsed(board, loc, num)
     return false;
 }
 
-function findNextFree(board)
+export function findNextFree(board)
 {
     for(let i = 0; i < 9; i++)
     {
@@ -75,7 +77,7 @@ function findNextFree(board)
     return [-1,-1];//no free space
 }
 
-function generatePuzzle(emptyBoard)
+export function generatePuzzle(emptyBoard)
 {
 
 }

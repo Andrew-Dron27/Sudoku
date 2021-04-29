@@ -94,7 +94,7 @@ function Cell(props, id)
 {
   return(
     <td className="Cell" id={id}>
-      <input type="number" max="9" min="0" maxLength="1" value={props==0 ? ' ': props}></input>
+      <input type="number" max="9" min="0" maxLength="1" value={props==0 ? '': props}></input>
       </td>
   )
 }
