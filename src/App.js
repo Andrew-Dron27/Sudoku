@@ -99,7 +99,4 @@ function Cell(props, id)
   )
 }
 
-
-
-
 export default App;

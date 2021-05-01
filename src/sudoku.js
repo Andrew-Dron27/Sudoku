@@ -116,11 +116,9 @@ function createPuzzle(filledBoard, difficulty)
     {
         //pick random locations till we strike a non-zero cell
         let randLoc = Math.floor(Math.random() * 81);
-        //console.log(randLoc);
         while(filledBoard[randLoc] == 0)
         {
             randLoc = Math.floor(Math.random() * 81);
-            //console.log(filledBoard[randLoc]);
         }
 
         let tmp = filledBoard[randLoc];
