@@ -1,6 +1,8 @@
 
 const rowSize = 9;
-export function solvePuzzle(board)
+const numSet = [1,2,3,4,5,6,7,8,9];
+const difficulty = 2;
+export function solvePuzzle(board, numSols)
 {
     let row;
     let col;
@@ -8,6 +10,7 @@ export function solvePuzzle(board)
     
     if(row == -1 || col == -1)
     {
+        numSols[0]++;
         return true;
     }
     let loc = row * rowSize + col;
@@ -18,7 +21,7 @@ export function solvePuzzle(board)
         {
             board[loc] = i;
 
-            if(solvePuzzle(board))
+            if(solvePuzzle(board,numSols))
             {
                 return true;
             }
@@ -94,7 +97,106 @@ export function findNextFree(board)
     return [-1,-1];//no free space
 }
 
-export function generatePuzzle(emptyBoard)
+//Same functionality as the solution with backtracking algorithm
+//Except with a set of [1-9] in random order as the seed
+//Try and have difficulty be 1-5
+export function generatePuzzle(Board, difficulty)
 {
+    fillBoard(Board);
+    createPuzzle(Board, difficulty);
+}
 
+function createPuzzle(filledBoard, difficulty)
+{
+    let i = 0;
+    let numSols;
+    let copy;
+    let numIterations = Math.min(64, difficulty * 13)
+    while(i <= numIterations)
+    {
+        //pick random locations till we strike a non-zero cell
+        let randLoc = Math.floor(Math.random() * 81);
+        //console.log(randLoc);
+        while(filledBoard[randLoc] == 0)
+        {
+            randLoc = Math.floor(Math.random() * 81);
+            //console.log(filledBoard[randLoc]);
+        }
+
+        let tmp = filledBoard[randLoc];
+        filledBoard[randLoc] = 0;
+        printBoard(filledBoard);
+        numSols = [0];
+        copy = filledBoard.slice();     
+        //test for one possible solution
+        solvePuzzle(copy, numSols);
+
+        console.log(numSols[0]);
+        
+        if(numSols[0] != 1)
+        {
+            console.log("SHIIIIET")
+            filledBoard = tmp;
+        }
+        i++
+    }
+}
+
+export function fillBoard(emptyBoard)
+{
+    let row;
+    let col;
+    let randNums = numSet.slice();
+    [row,col] = findNextFree(emptyBoard);
+    
+    if(row == -1 || col == -1)
+    {
+        return true;
+    }
+    let loc = row * rowSize + col;
+
+    for(let i of shuffle(randNums))
+    {
+        if(!isNumUsedRow(emptyBoard,loc,i) && !isNumUsedCol(emptyBoard,loc,i) && !isNumUsedSquare(emptyBoard,loc,i))
+        {
+            emptyBoard[loc] = i;
+
+            if(fillBoard(emptyBoard))
+            {
+                return true;
+            }
+            emptyBoard[loc] = 0;
+        }
+    }
+    return false;
+}
+
+// http://stackoverflow.com/questions/962802#962890
+function shuffle(array) {
+    var tmp, current, top = array.length;
+    if(top) while(--top) {
+      current = Math.floor(Math.random() * (top + 1));
+      tmp = array[current];
+      array[current] = array[top];
+      array[top] = tmp;
+    }
+    return array;
+  }
+
+export function printBoard(board)
+{
+    if(board.length != 81)
+    {
+        return;
+    }
+    let str = "";
+    for(let i = 0 ; i < 9; i++)
+    {
+        for(let j = 0; j < 9; j++)
+        {
+            str += ", " + board[i * 9 + j].toString();
+        }
+        str += "\n";
+    }
+    console.log(str);
 }
