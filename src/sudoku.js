@@ -31,7 +31,7 @@ export function solvePuzzle(board, numSols)
     return false;
 }
 
-export function isNumUsedRow(board, loc, num)
+export function isNumUsedRow(board, loc, num, conflict)
 {
     const row = Math.floor(loc / rowSize);
     //check the rows and columns
@@ -46,7 +46,7 @@ export function isNumUsedRow(board, loc, num)
     return false;
 }
 
-export function isNumUsedCol(board,loc,num)
+export function isNumUsedCol(board,loc,num,conflict)
 {
     const col = loc % rowSize;
     for(let i = 0; i < rowSize; i++)
@@ -59,7 +59,7 @@ export function isNumUsedCol(board,loc,num)
     return false;
 }
 
-export function isNumUsedSquare(board, loc, num)
+export function isNumUsedSquare(board, loc, num, conflict)
 {
     const row = Math.floor(loc / rowSize);
     const col = loc % rowSize;
@@ -89,12 +89,16 @@ export function findNextFree(board)
         {
             if(board[i * rowSize + j] === 0)
             {
-
                 return [i,j];
             }
         }
     }
     return [-1,-1];//no free space
+}
+
+export function isNumGucciGang(board,loc,num,conflict)
+{
+    return !isNumUsedRow(board,loc,num,conflict) && !isNumUsedCol(board,loc,num, conflict) && !isNumUsedSquare(board,loc,num,conflict);
 }
 
 //Same functionality as the solution with backtracking algorithm
@@ -132,7 +136,6 @@ function createPuzzle(filledBoard, difficulty)
         
         if(numSols[0] !== 1)
         {
-            console.log("SHIIIIET")
             filledBoard = tmp;
         }
         i++

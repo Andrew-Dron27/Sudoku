@@ -12,7 +12,6 @@ function App() {
   );
 }
 
-//
 class Game extends React.Component
 {
   constructor(props)
@@ -26,7 +25,8 @@ class Game extends React.Component
 
     this.state = {
       board: newPuzzle,
-      history: null,
+      history: [],
+      futurePast: [],
       currentSolution: puzzleSol,
     };
   }
@@ -42,12 +42,12 @@ class Game extends React.Component
         />
       </div>
       <div className="game-info">
-        <button id = "undo_button">Undo</button>
-        <button id = "redo_button">Redo</button>
-        <button id = "hint_button">Hint?</button>
+        <button id = "undo_button" onClick = {() => this.handleUndo()}>Undo</button>
+        <button id = "redo_button" onClick = {() => this.handleRedo()}>Redo</button>
+        <button id = "hint_button" onClick = {() => this.handleHint()}>Hint?</button>
         <button id = "diff_button">
           Difficulty
-          <input id="diff_button_input" type="number" max="5" min="1" maxLength="1"></input>
+          <input id="diff_button_input" type="number" max="5" min="1" maxLength="1" value = "5"></input>
         </button>
         <button id = "gen_button" onClick = {() => this.genPuzzle()}>Generate New Puzzle</button>    
       </div>
@@ -65,20 +65,91 @@ class Game extends React.Component
     let puzzleSol = newPuzzle.slice();
     sudoku.solvePuzzle(puzzleSol,[]);
 
+    let hist = this.state.history.slice();
+    let curBoard = this.state.board.slice();
+    hist.push(curBoard)
+
     this.setState ({
       board: newPuzzle,
-      history: null,
+      history: hist,
+      futurePast : [],
       currentSolution: puzzleSol,
     });
+  }
+
+  handleUndo = () =>
+  {
+    if(this.state.history.length === 0)
+    {
+      return;
+    }
+    let hist = this.state.history.slice();
+    let future = this.state.futurePast.slice();
+
+    let prevBoard = hist.pop();
+    future.push(this.state.board);
+
+    this.setState({
+      board: prevBoard,
+      history: hist,
+      futurePast: future,
+      currentSolution: this.state.currentSolution,
+    });
+  }
+
+  handleRedo = () =>
+  {
+    if(this.state.futurePast.length === 0)
+    {
+      return;
+    }
+
+    let hist = this.state.history.slice();
+    let future = this.state.futurePast.slice();
+
+    let prevBoard = future.pop();
+    hist.push(this.state.board);
+
+    this.setState({
+      board: prevBoard,
+      history: hist,
+      futurePast: future,
+      currentSolution: this.state.currentSolution,
+    });
+  }
+
+  handleHint = () =>
+  {
+    for(let i = 0; i < 81; i++)
+    {
+      if(this.state.board[i] != this.state.currentSolution[i])
+      {
+        //TODO highlight incorrect entry
+      }
+    }
+
+    for(let i = 0; i < 81; i++)
+    {
+      if(this.state.board[i] == 0)
+      {
+        //TODO highlight square green and enter value in square
+        this.handleValueChange(this.state.currentSolution[i],i);
+      }
+    }
   }
 
   handleValueChange = (val, id)=>
   {
     let newBoard = this.state.board.slice();
+    let history = this.state.history.slice();
+
+    history.push(this.state.board);
     newBoard[id] = val;
+    
     this.setState({
       board: newBoard,
-      history: null,
+      history: history,
+      futurePast: [],
       currentSolution: this.state.currentSolution,
     });
     
@@ -91,7 +162,7 @@ class Game extends React.Component
     {
       if( this.state.board === this.state.currentSolution)
       {
-        //your winner
+        //TODO your winner
       }
     }
     for(let i = 0; i < squaresPerRow; i++)
@@ -163,7 +234,7 @@ class Cell extends React.Component
   onValChange = (e) => 
   {
     const inputVal = parseInt(e.target.value);
-    if(inputVal.length === 1, !isNaN(inputVal))
+    if(inputVal.toString().length === 1, !isNaN(inputVal))
     {
       this.props.parentValChange(inputVal,this.props.id)
     }
